@@ -1,0 +1,17 @@
+canvasの練習で作りました。
+
+- 操作方法
+MoveLeft : a
+MoveRight: d
+Jump     : space
+
+- 注意事項
+終了する時はEXITボタンをクリックするか、右上のXでウィンドウを閉じてください。
+keyPress,KeyReleaseが上手く動かないため os.system('xset r off')でキーの連続入力を無効化しています。
+Ctrl-cなどで強制終了した場合この設定が残ってしまいます。
+
+- もしos.system('xset r off')の設定が残った場合の対処法
+1.ログインし直す
+2.bounceBall.pyをもう一度起動して正常に終了する
+3.os.system('xset r on')を自分で書き、実行する
+ログインし直したらもとに戻るのであまり心配する必要はないかもです。

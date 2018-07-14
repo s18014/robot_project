@@ -22,9 +22,9 @@ class Ball:
         self.canvas.delete(self.ball)
         self.g = 0.3
         self.v += self.g
-        if self.y > self.ww:
+        if self.y > self.wh:
             self.v = 0
-            self.y = self.ww
+            self.y = self.wh
         if self.y < self.size:
             self.v = 0
             self.y = self.size
@@ -35,8 +35,8 @@ class Ball:
 
     def jump(self):
         if self.canJump:
-            if self.y > self.ww:
-                self.y = self.ww - 1
+            if self.y > self.wh:
+                self.y = self.wh - 1
             self.v = -10
             self.canJump = False
 
@@ -71,7 +71,7 @@ class Discription:
         self.canvas.after(16, self.help)
 
     def init(self):
-        self.canvas.create_text(self.ww - 70, 30, text="HelpKey:   h", font=("", 12))
+        self.canvas.create_text(self.ww - 70, 30, text="HELP:   h", font=("", 12))
 
 
 def pressKey(event):
@@ -96,6 +96,11 @@ def releaseKey(event):
         ball1.canJump = True
 
 
+def exit():
+    global root
+    root.quit()
+
+
 root = Tk()
 
 text = """
@@ -104,7 +109,7 @@ MoveRight:   d
 Jump     :   space
 """
 
-canvas = Canvas(root, width=600, height=600, bg="#0f0")
+canvas = Canvas(root, width=800, height=600, bg="#0f0")
 canvas.pack()
 
 ball1 = Ball(canvas, 100, 100, 50, 0)
@@ -122,6 +127,7 @@ root.bind("<KeyRelease-a>", releaseKey)
 root.bind("<KeyPress-d>", pressKey)
 root.bind("<KeyRelease-d>", releaseKey)
 root.bind("<KeyPress-h>", pressKey)
+Button(root, text="EXIT", bg="red", command=exit).pack()
 root.mainloop()
 
 os.system('xset r on')
