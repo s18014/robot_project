@@ -1,11 +1,14 @@
 from tkinter import *
+from time import time
 import os
 
 os.system('xset r off')
 
+milli = lambda: round(time() * 1000)
+
 
 class Ball:
-    def __init__(self, canvas, x, y, size, v):
+    def __init__(self, canvas, x, y, size, v, fps):
         self.canvas = canvas
         self.wh = canvas.winfo_reqheight() - size
         self.ww = canvas.winfo_reqwidth() - size
@@ -13,43 +16,61 @@ class Ball:
         self.y = y
         self.size = size
         self.v = v
+        self.st = milli()
+        self.ed = milli()
+        self.fps = fps
         self.leftKey = False
         self.rightKey = False
         self.canJump = True
+        self.textBox = self.canvas.create_text(0, 0)
         self.ball = canvas.create_oval(self.x - self.size, self.y - self.size, self.x + self.size, self.y + self.size, fill="red")
+
+    def update(self):
+        self.canvas.delete(self.textBox)
+        self.st = milli()
+        self.m = ((self.st - self.ed) / 1000)
+        self.magn = lambda x: self.m * x
+        self.ed = milli()
+        self.text = """
+        x:{:>8.2f}
+        y:{:>8.2f}
+        v:{:>8.2f}
+        """.format(self.x, self.y, self.v)
+        self.textBox = self.canvas.create_text(self.ww - 50, 90, text=self.text, font=("", 12))
+        self.canvas.after(self.fps, self.update)
 
     def fall(self):
         self.canvas.delete(self.ball)
-        self.g = 0.3
-        self.v += self.g
-        if self.y > self.wh:
+        self.g = 3000
+        self.v += self.magn(self.g)
+        if self.y >= self.wh:
             self.v = 0
             self.y = self.wh
-        if self.y < self.size:
+        elif self.y <= self.size:
             self.v = 0
-            self.y = self.size
-        self.y += self.v
-
+            self.y = self.size + 1
+        else:
+            self.y += self.magn(self.v)
         self.ball = canvas.create_oval(self.x - self.size, self.y - self.size, self.x + self.size, self.y + self.size, fill="red")
-        self.canvas.after(16, self.fall)
+        self.canvas.after(self.fps, self.fall)
 
     def jump(self):
         if self.canJump:
-            if self.y > self.wh:
+            if self.y >= self.wh:
                 self.y = self.wh - 1
-            self.v = -10
+            self.v = -1200
             self.canJump = False
 
     def move(self):
         if self.leftKey:
-            self.x += 10
+            self.x += self.magn(1000)
         if self.rightKey:
-            self.x -= 10
+            self.x -= self.magn(1000)
         if self.x > self.ww:
             self.x = self.ww
         if self.x < self.size:
             self.x = self.size
-        self.canvas.after(16, self.move)
+        self.canvas.after(self.fps, self.move)
 
 
 class Discription:
@@ -112,7 +133,10 @@ Jump     :   space
 canvas = Canvas(root, width=800, height=600, bg="#0f0")
 canvas.pack()
 
-ball1 = Ball(canvas, 100, 100, 50, 0)
+fps = int(1000 / 60)
+
+ball1 = Ball(canvas, 100, 100, 50, 0, fps)
+ball1.update()
 ball1.fall()
 ball1.move()
 
