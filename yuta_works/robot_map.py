@@ -2,7 +2,7 @@ import tkinter as tk
 import math
 
 
-class RobotStatus:
+class Robot:
     def __init__(self, canvas, x, y, front, right, back, left):
         self.canvas = canvas
         self.x = x
@@ -12,6 +12,18 @@ class RobotStatus:
         self.back = back
         self.left = left
 
+    def draw():
+        pass
+
+    def update():
+        pass
+
+    def move():
+        pass
+
+    def turn():
+        pass
+
 
 class Map:
     def __init__(self, canvas, zoom_rate):
@@ -19,19 +31,30 @@ class Map:
         self.wh = canvas.winfo_reqheight()
         self.ww = canvas.winfo_reqwidth()
         self.zoom_rate = zoom_rate
+        self.hww = self.ww // 2
+        self.hwh = self.wh // 2
+        self.cell_x = math.ceil(self.hww / self.zoom_rate)
+        self.cell_y = math.ceil(self.hwh / self.zoom_rate)
+        self.lineGrid()
 
-    def grid(self):
+    def lineGrid(self):
         self.canvas.delete("grid")
-        square_x = math.ceil(self.ww / self.zoom_rate)
-        square_y = math.ceil(self.wh / self.zoom_rate)
-        for i in range(square_x):
-            self.canvas.create_line(i*self.zoom_rate, 0, i*self.zoom_rate, self.wh, tag="grid")
-            self.canvas.pack()
-        for i in range(square_y):
-            self.canvas.create_line(0, i*self.zoom_rate, self.ww, i*self.zoom_rate, tag="grid")
-            self.canvas.pack()
-
+        self.cell_x = math.ceil(self.hww / self.zoom_rate)
+        self.cell_y = math.ceil(self.hwh / self.zoom_rate)
+        x1 = lambda i: self.hww + i * self.zoom_rate
+        x2 = lambda i: self.hww + -(i+1) * self.zoom_rate
+        y1 = lambda i: self.hwh + i * self.zoom_rate
+        y2 = lambda i: self.hwh + -(i+1) * self.zoom_rate
+        for i in range(self.cell_x):
+            self.canvas.create_line(x1(i), 0, x1(i), self.wh, tag="grid")
+            self.canvas.create_line(x2(i), 0, x2(i), self.wh, tag="grid")
+        for i in range(self.cell_y):
+            self.canvas.create_line(0, y1(i), self.ww, y1(i), tag="grid")
+            self.canvas.create_line(0, y2(i), self.ww, y2(i), tag="grid")
         self.canvas.pack()
+
+    def cellGrid(self):
+        pass
 
 
 class Draw:
@@ -47,18 +70,20 @@ def testUpdate(e):
         field.zoom_rate += 1
     elif e.keysym == "Down" and field.zoom_rate > 10:
         field.zoom_rate -= 1
-    print(field.zoom_rate)
-    field.grid()
+    elif e.keysym == "c":
+        pass
+    field.lineGrid()
 
 
 root = tk.Tk()
 canvas = tk.Canvas(root, width=800, height=600, bg="#999")
 canvas.pack()
 field = Map(canvas, 30)
-field.grid()
+field.cellGrid()
 root.bind_all("q", exit)
 root.bind_all("<Up>", testUpdate)
 root.bind_all("<Down>", testUpdate)
+root.bind_all("c", testUpdate)
 # Can not get MouseWheel reactions, why why why why
 # root.bind_all("<MouseWheel>", testUpdate)
 root.mainloop()
